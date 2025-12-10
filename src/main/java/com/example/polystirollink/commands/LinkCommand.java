@@ -27,6 +27,13 @@ public class LinkCommand {
 			return 0;
 		}
 
+		var server = source.getServer();
+		if (server == null) {
+			polystirollink.LOGGER.error("Server is null in link command");
+			player.sendSystemMessage(Component.literal("❌ Ошибка: сервер недоступен."));
+			return 0;
+		}
+
 		String linkCode = StringArgumentType.getString(context, "code");
 		
 		if (linkCode == null || linkCode.isEmpty()) {
@@ -35,13 +42,25 @@ public class LinkCommand {
 		}
 
 		String gameId = player.getUUID().toString();
-		String platformUsername = player.getName().getString();
-		var server = source.getServer();
+		var playerName = player.getName();
+		if (playerName == null) {
+			polystirollink.LOGGER.error("Player name is null for player {}", gameId);
+			player.sendSystemMessage(Component.literal("❌ Ошибка: не удалось получить имя игрока."));
+			return 0;
+		}
+		String platformUsername = playerName.getString();
 
 		player.sendSystemMessage(Component.literal("⏳ Обработка запроса привязки..."));
 
 		ProgressionCore.linkAccount(linkCode, gameId, platformUsername)
 				.thenAccept(result -> {
+					if (result == null) {
+						polystirollink.LOGGER.error("Link result is null for player {}", platformUsername);
+						server.execute(() -> {
+							player.sendSystemMessage(Component.literal("❌ Произошла ошибка при обработке запроса."));
+						});
+						return;
+					}
 					// Выполняем в главном потоке сервера
 					server.execute(() -> {
 						player.sendSystemMessage(Component.literal(result.getMessage()));
