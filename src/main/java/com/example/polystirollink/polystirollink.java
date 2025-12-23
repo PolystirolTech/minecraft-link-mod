@@ -10,6 +10,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 import com.example.polystirollink.commands.LinkCommand;
@@ -39,7 +40,13 @@ public class polystirollink {
 		LOGGER.info("HELLO from server starting");
 		
 		// Register commands
-		LinkCommand.register(event.getServer().getCommands().getDispatcher());
-		LOGGER.info("Link command registered");
+		// LinkCommand.register(event.getServer().getCommands().getDispatcher());
+		// LOGGER.info("Link command registered");
+	}
+
+	@SubscribeEvent
+	public void onRegisterCommands(RegisterCommandsEvent event) {
+		LinkCommand.register(event.getDispatcher());
+		LOGGER.info("Link command registered via RegisterCommandsEvent");
 	}
 }
