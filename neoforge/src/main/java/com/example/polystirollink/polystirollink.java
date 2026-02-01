@@ -13,7 +13,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
-import com.example.polystirollink.commands.LinkCommand;
+import com.example.polystirollink.core.PolystirolLinkCommon;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(polystirollink.MODID)
@@ -21,13 +21,17 @@ public class polystirollink {
 	// Define mod id in a common place for everything to reference
 	public static final String MODID = "polystirollink";
 	// Directly reference a slf4j logger
-	public static final Logger LOGGER = LogUtils.getLogger();
+	public static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
 
 	// The constructor for the mod class is the first code that is run when your mod is loaded.
 	// FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
 	public polystirollink(IEventBus modEventBus, ModContainer modContainer) {
 		// Register ourselves for server and other game events we are interested in.
 		NeoForge.EVENT_BUS.register(this);
+
+		// Initialize shared config
+		Config config = new Config();
+		PolystirolLinkCommon.setConfig(config);
 
 		// Register our mod's ModConfigSpec so that FML can create and load the config file for us
 		modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -37,16 +41,12 @@ public class polystirollink {
 	@SubscribeEvent
 	public void onServerStarting(ServerStartingEvent event) {
 		// Do something when the server starts
-		LOGGER.info("HELLO from server starting");
-		
-		// Register commands
-		// LinkCommand.register(event.getServer().getCommands().getDispatcher());
-		// LOGGER.info("Link command registered");
+		PolystirolLinkCommon.LOGGER.info("HELLO from server starting");
 	}
 
 	@SubscribeEvent
 	public void onRegisterCommands(RegisterCommandsEvent event) {
 		LinkCommand.register(event.getDispatcher());
-		LOGGER.info("Link command registered via RegisterCommandsEvent");
+		PolystirolLinkCommon.LOGGER.info("Link command registered via RegisterCommandsEvent");
 	}
 }

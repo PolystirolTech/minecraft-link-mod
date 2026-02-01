@@ -1,0 +1,13 @@
+{
+  "itemGroup.polystirollink": "Example Mod Tab",
+  "block.polystirollink.example_block": "Example Block",
+  "item.polystirollink.example_item": "Example Item",
+
+  "polystirollink.configuration.title": "polystirol-link Configs",
+  "polystirollink.configuration.section.polystirollink.common.toml": "polystirol-link Configs",
+  "polystirollink.configuration.section.polystirollink.common.toml.title": "polystirol-link Configs",
+  "polystirollink.configuration.items": "Item List",
+  "polystirollink.configuration.logDirtBlock": "Log Dirt Block",
+  "polystirollink.configuration.magicNumberIntroduction": "Magic Number Text",
+  "polystirollink.configuration.magicNumber": "Magic Number"
+}

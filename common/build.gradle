@@ -1,0 +1,31 @@
+plugins {
+    id 'fabric-loom' version '1.15-SNAPSHOT'
+    id 'java-library'
+}
+
+base {
+    archivesName = "${mod_id}-common"
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.21.10"
+    mappings "net.fabricmc:yarn:1.21.10+build.3:v2"
+    modApi "net.fabricmc:fabric-loader:0.18.4"
+    
+    api 'com.google.code.gson:gson:2.10.1'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+// Ensure the common project doesn't try to be a mod itself unless needed
+loom {
+    // This allows common to be used as a library
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}

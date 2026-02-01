@@ -9,8 +9,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.example.polystirollink.Config;
-import com.example.polystirollink.polystirollink;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -29,9 +27,10 @@ public class ProgressionCore {
 
 	public static CompletableFuture<LinkResult> linkAccount(String linkCode, String gameId, String platformUsername) {
 		return CompletableFuture.supplyAsync(() -> {
-			String backendUrl = Config.BACKEND_URL.get();
+			ModConfig config = PolystirolLinkCommon.getConfig();
+			String backendUrl = config != null ? config.getBackendUrl() : null;
 			if (backendUrl == null || backendUrl.isEmpty()) {
-				polystirollink.LOGGER.error("Backend URL is not configured!");
+				PolystirolLinkCommon.LOGGER.error("Backend URL is not configured!");
 				return new LinkResult(500, "Ошибка конфигурации: URL бэкенда не задан.");
 			}
 
@@ -61,13 +60,13 @@ public class ProgressionCore {
 					default -> new LinkResult(statusCode, "❌ Произошла ошибка при привязке аккаунта. Код: " + statusCode);
 				};
 			} catch (java.net.http.HttpTimeoutException e) {
-				polystirollink.LOGGER.error("HTTP request timeout: {}", e.getMessage());
+				PolystirolLinkCommon.LOGGER.error("HTTP request timeout: {}", e.getMessage());
 				return new LinkResult(408, "❌ Превышено время ожидания ответа от сервера.");
 			} catch (java.net.ConnectException e) {
-				polystirollink.LOGGER.error("Connection error: {}", e.getMessage());
+				PolystirolLinkCommon.LOGGER.error("Connection error: {}", e.getMessage());
 				return new LinkResult(503, "❌ Не удалось подключиться к серверу.");
 			} catch (Exception e) {
-				polystirollink.LOGGER.error("Error during account linking: ", e);
+				PolystirolLinkCommon.LOGGER.error("Error during account linking: ", e);
 				return new LinkResult(500, "❌ Произошла ошибка при отправке запроса: " + e.getMessage());
 			}
 		}, executorService);

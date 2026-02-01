@@ -1,7 +1,7 @@
-package com.example.polystirollink.commands;
+package com.example.polystirollink.fabric.commands;
 
 import com.example.polystirollink.core.ProgressionCore;
-import com.example.polystirollink.polystirollink;
+import com.example.polystirollink.core.PolystirolLinkCommon;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -29,50 +29,49 @@ public class LinkCommand {
 
 		var server = source.getServer();
 		if (server == null) {
-			polystirollink.LOGGER.error("Server is null in link command");
-			player.sendSystemMessage(Component.literal("❌ Ошибка: сервер недоступен."));
+			PolystirolLinkCommon.LOGGER.error("Server is null in link command");
+			source.sendFailure(Component.literal("❌ Ошибка: сервер недоступен."));
 			return 0;
 		}
 
 		String linkCode = StringArgumentType.getString(context, "code");
 		
 		if (linkCode == null || linkCode.isEmpty()) {
-			player.sendSystemMessage(Component.literal("❌ Код привязки не может быть пустым!"));
+			source.sendFailure(Component.literal("❌ Код привязки не может быть пустым!"));
 			return 0;
 		}
 
 		String gameId = player.getUUID().toString();
 		var playerName = player.getName();
 		if (playerName == null) {
-			polystirollink.LOGGER.error("Player name is null for player {}", gameId);
-			player.sendSystemMessage(Component.literal("❌ Ошибка: не удалось получить имя игрока."));
+			PolystirolLinkCommon.LOGGER.error("Player name is null for player {}", gameId);
+			source.sendFailure(Component.literal("❌ Ошибка: не удалось получить имя игрока."));
 			return 0;
 		}
 		String platformUsername = playerName.getString();
 
-		player.sendSystemMessage(Component.literal("⏳ Обработка запроса привязки..."));
+		source.sendSuccess(() -> Component.literal("⏳ Обработка запроса привязки..."), false);
 
 		ProgressionCore.linkAccount(linkCode, gameId, platformUsername)
 				.thenAccept(result -> {
 					if (result == null) {
-						polystirollink.LOGGER.error("Link result is null for player {}", platformUsername);
+						PolystirolLinkCommon.LOGGER.error("Link result is null for player {}", platformUsername);
 						server.execute(() -> {
-							player.sendSystemMessage(Component.literal("❌ Произошла ошибка при обработке запроса."));
+							source.sendFailure(Component.literal("❌ Произошла ошибка при обработке запроса."));
 						});
 						return;
 					}
 					// Выполняем в главном потоке сервера
 					server.execute(() -> {
-						player.sendSystemMessage(Component.literal(result.getMessage()));
-						polystirollink.LOGGER.info("Link result for player {}: {} (status: {})", 
+						source.sendSuccess(() -> Component.literal(result.getMessage()), false);
+						PolystirolLinkCommon.LOGGER.info("Link result for player {}: {} (status: {})", 
 								platformUsername, result.getMessage(), result.getStatusCode());
 					});
 				})
 				.exceptionally(throwable -> {
-					polystirollink.LOGGER.error("Error in link command execution: ", throwable);
-					// Выполняем в главном потоке сервера
+					PolystirolLinkCommon.LOGGER.error("Error in link command execution: ", throwable);
 					server.execute(() -> {
-						player.sendSystemMessage(Component.literal("❌ Произошла ошибка при обработке запроса."));
+						source.sendFailure(Component.literal("❌ Произошла ошибка при обработке запроса."));
 					});
 					return null;
 				});

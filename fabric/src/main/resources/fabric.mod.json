@@ -1,0 +1,28 @@
+{
+    "schemaVersion": 1,
+    "id": "polystirollink",
+    "version": "${version}",
+    "name": "polystirol-link",
+    "description": "Minecraft Link Mod for Fabric",
+    "authors": [
+        "YourNameHere"
+    ],
+    "contact": {
+        "homepage": "https://github.com/polystirolhub/minecraft-link",
+        "sources": "https://github.com/polystirolhub/minecraft-link"
+    },
+    "license": "All Rights Reserved",
+    "icon": "assets/polystirollink/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.example.polystirollink.fabric.PolystirolLinkFabric"
+        ]
+    },
+    "depends": {
+        "fabricloader": ">=0.18.4",
+        "minecraft": "1.21.10",
+        "java": ">=21",
+        "fabric-api": "*"
+    }
+}
